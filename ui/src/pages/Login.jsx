@@ -19,19 +19,32 @@ export function Login() {
 	if (isLoading) return <div>Is Loading...</div>;
   if (error) return <div>failed to load</div>;
 
+	function doCookie() {
+		if (document.cookie) {
+			let userId = data.filter((row) => row.Username === document.cookie.split('; ')[0].split('=')[1])[0].Id
+			return (<Link 
+				to={`/Item/UserId/${userId}`}>
+				Your_Items
+			</Link>)
+		} else return (<></>)
+	}
+	
 	return (
 		<>
 			<Link to="/">Home</Link>
 			<Link to="/register">Register</Link>
 			<Link to="/User">Users</Link>
 			<Link to="/Item">Items</Link>
+			<Link to="/Post_Item">Post_Item</Link>
+			<>{doCookie()}</>
+			<p>Successful login will automatically navigate you to your items</p>
 			<form onSubmit={(event) => {
 				data.some(user => {
 					if (user['Username'] === username && user['Password'] === password) {
 						document.cookie = `username=${username};path=/;max-age=3600;SameSite=Strict`;
 						document.cookie = `sessionToken=${password};path=/;max-age=3600;SameSite=Strict`;
 						console.log(user["Id"]);
-						navigate(`/Item/userId/${user["Id"]}`);
+						navigate(`/Item/UserId/${user["Id"]}`);
 						return true;
 					}
 					return false

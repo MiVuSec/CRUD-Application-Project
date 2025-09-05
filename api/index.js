@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
 
 app.get("/:table", (req, res) => {
   let unsanitizedTable = req.params.table;
-  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 99);
+  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 255);
   switch(table) {
     case 'User':
       knex(table)
@@ -42,7 +42,7 @@ app.get("/:table", (req, res) => {
 
 app.get("/:table/undefined/undefined", (req, res) => {
   let unsanitizedTable = req.params.table;
-  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 99);
+  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 255);
   switch(table) {
     case 'User':
       knex(table)
@@ -65,23 +65,47 @@ app.get("/:table/:column/:data", (req, res) => {
   let unsanitizedId = req.params.data;
   let id = unsanitizedId.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 9);
   let unsanitizedColumn = req.params.column;
-  let column = unsanitizedColumn.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 99);
+  let column = unsanitizedColumn.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 255);
   let unsanitizedTable = req.params.table;
-  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 99);
+  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 255);
 
   switch(table) {
     case 'User':
       knex(table)
         .select("*")
         .where(`User.${column}`, "=", id)
-        .then((data) => res.status(200).json(data))
+        .then((data) => {
+          if (data.length !== 0) {
+            res.status(200).json(data)
+          } else {
+            res.status(400).json([{
+              "Id": 0,
+              "First Name": "",
+              "Last Name": "",
+              "Username": "",
+              "Password": ""
+            }])
+          }
+        })
         .catch((err) => res.status(400).json(err));
       break;
     case 'Item':
       knex(table)
         .select("*")
         .where(`Item.${column}`, "=", id)
-        .then((data) => res.status(200).json(data))
+        .then((data) => {
+          if (data.length !== 0) {
+            res.status(200).json(data)
+          } else {
+            res.status(400).json([{
+              "Id": 0,
+              "UserId": 0,
+              "Item Name": "",
+              "Description": "",
+              "Quantity": 0
+            }])
+          }
+        })
         .catch((err) => res.status(400).json(err));
       break;
     default:
@@ -93,7 +117,7 @@ app.delete("/:table/:id", (req, res) => {
   let unsanitizedId = req.params.id;
   let id = unsanitizedId.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 9);
   let unsanitizedTable = req.params.table;
-  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 99);
+  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 255);
 
   if (!isNaN(parseFloat(id)) && isFinite(id))
   switch(table) {
@@ -121,7 +145,7 @@ app.delete("/:table/:id", (req, res) => {
 
 app.post("/:table", (req, res) => {
   let unsanitizedTable = req.params.table;
-  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 99);
+  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 255);
 
   switch(table) {
     case 'User':
@@ -147,7 +171,7 @@ app.patch("/:table/:id", (req, res) => {
   let unsanitizedId = req.params.id;
   let id = unsanitizedId.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 9);
   let unsanitizedTable = req.params.table;
-  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 99);
+  let table = unsanitizedTable.replace(/[^a-zA-Z0-9\s]/g, '').substring(0, 255);
 
   if (!isNaN(parseFloat(id)) && isFinite(id))
   switch(table) {

@@ -40,3 +40,18 @@
 .read-the-docs {
   color: #888;
 }
+
+textarea {
+  text-align: center;
+  vertical-align: middle;
+  width:100px;
+  min-height:30px;
+  max-height:200px;
+  height:auto;
+  border:2px solid rgba(63,63,63,1);
+  resize: vertical;
+}
+
+a {
+  padding: 20px;
+}
