@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 2"
+    "start": "node ./index.js",
+    "knex": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run"
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,56 @@
+volumes:
+  pgdatasource:
+
+services:
+  db:
+    image: postgres
+    container_name: testing
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: inventory
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d inventory"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+      timeout: 10s
+    volumes:
+      - pgdatasource:/var/lib/postgresql/data
+
+  mivusec-api:
+    build: api/
+    container_name: mivusec-api
+    
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgres://postgres:docker@db:5432/inventory
+  mivusec-ui:
+    build: ui/
+    tty: true
+    container_name: mivusec-ui
+    environment:
+      - FAST_REFRESH=false
+    # depends_on:
+    #   - "mivusec-api"
+    ports:
+      - "5173:5173"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
